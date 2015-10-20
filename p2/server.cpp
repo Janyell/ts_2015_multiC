@@ -47,14 +47,14 @@ int socket_and_bind(void) {
 
 int set_nonblock(int fd) {
     int flags;
-#if defined(O_NONBLOCK)
-    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+    #if defined(O_NONBLOCK)
+        if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
             flags = 0;
         return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-#else
-    flags = 1;
-    return ioctl(fd, FIONBIO, &flags);
-#endif
+    #else
+        flags = 1;
+        return ioctl(fd, FIONBIO, &flags);
+    #endif
 }
 
 void remove_cfd(std::vector<int> &cfds, int fd) {
@@ -112,7 +112,7 @@ int main() {
                 }
                 else {
                     while (true) {
-                        static char buf[MAX_LENGTH] = {0};
+                        char buf[MAX_LENGTH] = {0};
                         buf[MAX_LENGTH - 1] = '\n';
                         ssize_t n = recv(events[i].data.fd, buf, sizeof(buf) - 1, 0);
                         if (n <= 0) {
